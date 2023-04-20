@@ -11,15 +11,17 @@ class UserSettings: ObservableObject {
     @Published var stampArr:[String] = Array(repeating: "", count: 7)
     @Environment(\.presentationMode) var presentationMode
     @State private var shouldNavigate = false
-    @State private var isSaved = false
-    
+//    @State private var isSaved = false
+    @Published var isSaved: Bool = false
 }
+
 
 struct EmotionDefine: View {
     @EnvironmentObject var settings: UserSettings
     @State private var shouldNavigateToEvaluate = false
     @State private var shouldNavigateToHome = false
     @Environment(\.presentationMode) var presentationMode
+    @State var shouldNavigateToDefine = false
     
     var body: some View {
         NavigationView(content:{
@@ -51,9 +53,11 @@ struct EmotionDefine: View {
                             .frame(width: UIScreen.main.bounds.width).padding(.top,70).padding(.leading,230)
                             .onChange(of: settings.stampArr[0]) {
                                 print($0)
+                                if settings.isSaved {
+                                    settings.isSaved.toggle()
+                                }
                             }
                         )
-                    
                     
                     Image("orange").resizable().position(x:geometry.size.width/(-3.3) , y:geometry.size.height/10)
                         .frame(width: 55,height: 55).padding(.bottom,20)
@@ -106,14 +110,29 @@ struct EmotionDefine: View {
                             }
                         )
                 }.padding(.leading,10).position(x:geometry.size.width / 2 , y:geometry.size.height / 2.3)
+                    .onChange(of: presentationMode.wrappedValue.isPresented, perform: { value in
+                    if !value {
+                        shouldNavigateToDefine = false
+                    }
+                })
                 
                 NavigationLink(destination: Home().navigationBarBackButtonHidden(true),
                    isActive: $shouldNavigateToHome){
                     EmptyView()
-                }
+                }.isDetailLink(false)
                 
                 Button(action: {
                     shouldNavigateToHome = true
+                    for i in settings.stampArr{
+                        if i != "" {
+                            settings.isSaved = true
+                            continue
+                        }else{
+                            settings.isSaved = false
+                            break
+                        }
+                    }
+                    
                 }, label: {
                     RoundedRectangle(cornerRadius: 20).frame(width:200,height: 70).shadow(radius: 10)
                         .overlay(Text("SUBMIT").foregroundColor(Color(.white)))

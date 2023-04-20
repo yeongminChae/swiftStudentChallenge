@@ -11,10 +11,8 @@ struct EmotionDefineCheck: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var settings: UserSettings
     @State private var shouldNavigateToDefine = false
-
     
     var body: some View {
-        
         GeometryReader {geometry in
             VStack{
                 ZStack(alignment: .topLeading) {
@@ -66,7 +64,7 @@ struct EmotionDefineCheck: View {
                     NavigationLink(destination: EmotionDefine().navigationBarBackButtonHidden(true),
                        isActive: $shouldNavigateToDefine){
                         EmptyView()
-                    }
+                    }.isDetailLink(false) 
                     
                     Button(action: {
                         shouldNavigateToDefine = true
